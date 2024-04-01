@@ -314,4 +314,9 @@ const deleteSelectedNotes = async () => {
 };
 </script>
 
-<style lang="scss"></style>
+<style lang="scss">
+body {
+  --tw-bg-opacity: 1 !important;
+  background-color: rgb(30 41 59 / 1) !important;
+}
+</style>
