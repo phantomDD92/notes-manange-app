@@ -19,6 +19,7 @@
     "@docsearch/js": "^3.6.0",
     "@vitejs/plugin-vue": "^5.0.4",
     "@vitest/coverage-istanbul": "^1.4.0",
+    "chart.js": "^4.4.2",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-nuxt": "^4.0.0",
