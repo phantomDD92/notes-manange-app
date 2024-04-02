@@ -114,6 +114,7 @@
         </div>
       </div>
     </div>
+    <Toast />
   </div>
 </template>
 
@@ -121,7 +122,10 @@
 import { storeToRefs } from "pinia";
 import { useAuthStore } from "~/store/auth";
 import InputText from "primevue/inputtext";
+import { useToast } from "primevue/usetoast";
+
 const submitted = ref(false);
+const toast = useToast();
 
 const { authenticateUser } = useAuthStore(); // use auth store
 
@@ -139,13 +143,20 @@ const login = async () => {
   submitted.value = true;
   if (user.value.email.trim() || user.value.password.trim()) {
     try {
-      await authenticateUser(user.value);
+      const { error } = await authenticateUser(user.value);
+      console.log("error: ", error);
       // redirect to homepage if user is authenticated
-      if (authenticated) {
+      if (!error && authenticated) {
         router.push("/note");
       }
     } catch (error) {
-      console.error("An error occurred while authenticating user:", error);
+      console.log("error: ", error.message);
+      toast.add({
+        severity: "error",
+        summary: "Error",
+        detail: "Something is wrong!",
+        life: 3000,
+      });
       // Handle error here, such as displaying an error message to the user
     }
   }
