@@ -148,6 +148,13 @@ const login = async () => {
       // redirect to homepage if user is authenticated
       const error = data?.error?.value;
       if (authenticated.value) {
+        toast.add({
+          severity: "success",
+          summary: "Successful",
+          detail: "You are logged In now.",
+          life: 5000,
+        });
+        setTimeout(() => {}, 5000);
         router.push("/note");
       } else {
         toast.add({
