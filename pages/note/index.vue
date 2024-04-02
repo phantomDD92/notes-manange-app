@@ -23,7 +23,7 @@
     <div class="grid justify-items-start pt-5 justify-content-center">
       <div v-for="item in notes" class="p-1 cursor-pointer">
         <Card style="width: 25rem; overflow: hidden" @click="editNote(item)">
-          <template #title>{{ item.title }}</template>
+          <template #title><div v-html="item.title"></div></template>
           <template #content>
             <p class="m-0" v-html="item.content"></p>
           </template>
@@ -43,6 +43,7 @@
         <InputText
           id="title"
           v-model.trim="note.title"
+          v-html="note.title"
           required="true"
           autofocus
           :class="{ 'p-invalid': submitted && !note.title }"
