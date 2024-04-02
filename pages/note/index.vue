@@ -25,9 +25,7 @@
         <Card style="width: 25rem; overflow: hidden" @click="editNote(item)">
           <template #title>{{ item.title }}</template>
           <template #content>
-            <p class="m-0">
-              {{ item.content }}
-            </p>
+            <p class="m-0" v-html="item.content"></p>
           </template>
         </Card>
       </div>
@@ -58,6 +56,7 @@
         <Textarea
           id="content"
           v-model="note.content"
+          v-html="note.content"
           :class="{ 'p-invalid': submitted && !note.content }"
           required="true"
           rows="10"
