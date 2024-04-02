@@ -1,5 +1,5 @@
 <template>
-  <div class="relative">
+  <div class="relative login-page">
     <div
       class="relative hidden md:flex flex-auto items-center justify-center h-full p-16 px-28 overflow-hidden bg-gray-800 dark:border-l"
     >
@@ -176,8 +176,12 @@ const login = async () => {
 @import "public/styles/login/style.css";
 </style>
 <style lang="scss">
-body {
-  --tw-bg-opacity: 1 !important;
-  background-color: rgb(30 41 59 / 1) !important;
+body,
+#__nuxt {
+  height: 100vh;
+}
+.login-page {
+  height: 100vh;
+  background-color: rgb(30 41 59 / 1);
 }
 </style>

@@ -176,6 +176,7 @@ const items = ref([
 
 const note = ref({ id: "", title: "", content: "" });
 const notes = ref();
+const router = useRouter();
 
 const loading = ref(false);
 const noteDialog = ref(false);
@@ -292,13 +293,17 @@ const deleteSelectedNotes = async () => {
 
 const logout = async () => {
   await logUserOut();
-  return navigateTo("/");
+  return router.push("/");
 };
 </script>
 
 <style lang="scss">
-body {
-  --tw-bg-opacity: 1 !important;
-  background-color: #f1f5f9 !important;
+body,
+#__nuxt {
+  height: 100vh;
+}
+.login-page {
+  height: 100vh;
+  background-color: #f1f5f9;
 }
 </style>
