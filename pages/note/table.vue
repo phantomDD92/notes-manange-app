@@ -1,36 +1,84 @@
 <template>
   <div class="p-6">
     <div class="flex p-1">
-      <div class="flex card w-full">
+      <div class="card w-full">
         <Menubar :model="items" />
-        <Button label="Logout" icon="pi pi-user" text @click="logout()" />
       </div>
     </div>
+    <div class="card">
+      <Toolbar class="mb-4">
+        <template #start>
+          <Button
+            label="New"
+            icon="pi pi-plus"
+            severity="success"
+            class="mr-2"
+            @click="openNew"
+          />
+          <Button
+            label="Delete"
+            icon="pi pi-trash"
+            severity="danger"
+            @click="confirmDeleteSelected"
+            :disabled="!selectedNotes || !selectedNotes.length"
+          />
+        </template>
+      </Toolbar>
 
-    <div>
-      <Button
-        label="New"
-        severity="success"
-        @click="openNew"
-        icon="pi pi-plus"
-      />
-    </div>
+      <DataTable
+        ref="dt"
+        :value="notes"
+        v-model:selection="selectedNotes"
+        dataKey="id"
+        :paginator="true"
+        :rows="10"
+        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+      >
+        <template #header>
+          <div
+            class="flex flex-wrap gap-2 align-items-center justify-content-between"
+          >
+            <h4 class="m-0">Manage Notes</h4>
+          </div>
+        </template>
 
-    <div class="flex justify-content-center">
-      <!-- <ProgressSpinner aria-label="Loading" spinner="loading" /> -->
-    </div>
+        <Column
+          selectionMode="multiple"
+          style="width: 3rem"
+          :exportable="false"
+        ></Column>
+        <Column field="title" header="Title" style="min-width: 12rem"></Column>
+        <Column
+          field="content"
+          header="Content"
+          style="min-width: 16rem"
+        ></Column>
 
-    <div class="grid justify-items-start pt-5 justify-content-center">
-      <div v-for="item in notes" class="p-1 cursor-pointer">
-        <Card style="width: 25rem; overflow: hidden" @click="editNote(item)">
-          <template #title>{{ item.title }}</template>
-          <template #content>
-            <p class="m-0">
-              {{ item.content }}
-            </p>
+        <Column :exportable="false" style="min-width: 8rem">
+          <template #body="slotProps">
+            <Button
+              icon="pi pi-pencil"
+              outlined
+              rounded
+              class="mr-2"
+              @click="editNote(slotProps.data)"
+            />
+            <Button
+              icon="pi pi-trash"
+              outlined
+              rounded
+              severity="danger"
+              @click="confirmDeleteProduct(slotProps.data)"
+            />
           </template>
-        </Card>
-      </div>
+        </Column>
+      </DataTable>
+      <!-- <Paginator
+          v-model:first="firstPage"
+          :rows="15"
+          :totalRecords="totalCount"
+          :rowsPerPageOptions="[15, 30]"
+        ></Paginator> -->
     </div>
 
     <Dialog
@@ -60,7 +108,7 @@
           v-model="note.content"
           :class="{ 'p-invalid': submitted && !note.content }"
           required="true"
-          rows="10"
+          rows="3"
           cols="20"
         />
         <small class="p-error" v-if="submitted && !note.content"
@@ -69,16 +117,6 @@
       </div>
 
       <template #footer>
-        <Button
-          icon="pi pi-times"
-          severity="danger"
-          rounded
-          outlined
-          aria-label="Cancel"
-          class="w-1"
-          @click="confirmDeleteProduct(note)"
-          v-if="note?.id"
-        />
         <Button label="Cancel" icon="pi pi-times" text @click="hideDialog" />
         <Button label="Save" icon="pi pi-check" text @click="saveNote" />
       </template>
@@ -135,22 +173,17 @@
         />
       </template>
     </Dialog>
-
-    <Toast />
   </div>
 </template>
 
 <script lang="ts" setup>
 import Menubar from "primevue/menubar";
 import Button from "primevue/button";
-import Card from "primevue/card";
-import { useToast } from "primevue/usetoast";
-import ProgressSpinner from "primevue/progressspinner";
-
+// import Paginator from "primevue/paginator";
 import { nextTick } from "vue";
 
+import { useToast } from "primevue/usetoast";
 import { useNoteStore } from "~/store/note";
-import { useAuthStore } from "~/store/auth";
 
 import { ref } from "vue";
 
@@ -167,8 +200,9 @@ const items = ref([
 
 const note = ref({ id: "", title: "", content: "" });
 const notes = ref();
+// const totalCount = ref(0);
+// const firstPage = ref(0);
 
-const loading = ref(false);
 const noteDialog = ref(false);
 const deleteNoteDialog = ref(false);
 const deleteNotesDialog = ref(false);
@@ -183,17 +217,15 @@ const {
   updateNote,
   deleteNoteId,
   deleteNotes,
-} = useNoteStore(); // use note store
-const { logUserOut } = useAuthStore(); // use note store
+} = useNoteStore(); // use auth store
 
 onMounted(async () => {
   await nextTick();
 
-  loading.value = true;
-
   await getNotes().then(({ data, meta }) => {
     notes.value = data;
-    loading.value = false;
+    // totalCount.value = meta.total;
+    // firstPage.value = meta.current_page;
   });
 });
 
@@ -209,7 +241,6 @@ const openNew = () => {
   noteDialog.value = true;
 };
 const hideDialog = () => {
-  note.value = { id: "", title: "", content: "" };
   noteDialog.value = false;
   submitted.value = false;
 };
@@ -246,24 +277,26 @@ const saveNote = async () => {
 };
 
 const editNote = async (prod) => {
-  // await getNote(prod);
-  note.value = prod;
+  note.value = await getNote(prod);
   noteDialog.value = true;
 };
 
 const deleteNote = async () => {
   await deleteNoteId(note.value);
+  note.value = { id: "", title: "", content: "" };
   const { data } = await getNotes();
   notes.value = data;
-  noteDialog.value = false;
   deleteNoteDialog.value = false;
-  note.value = { id: "", title: "", content: "" };
   toast.add({
     severity: "success",
     summary: "Successful",
     detail: "Note Deleted",
     life: 3000,
   });
+};
+
+const confirmDeleteSelected = () => {
+  deleteNotesDialog.value = true;
 };
 
 const deleteSelectedNotes = async () => {
@@ -278,11 +311,6 @@ const deleteSelectedNotes = async () => {
     detail: "Notes Deleted",
     life: 3000,
   });
-};
-
-const logout = async () => {
-  await logUserOut();
-  return navigateTo("/");
 };
 </script>
 
