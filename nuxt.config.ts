@@ -1,9 +1,11 @@
-import aliasConfig from "./nuxt-vite.config.js";
+import aliasConfig from "./nuxt-vite.config.js/index.js";
 
 const baseUrl = "/";
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  ssr: false,
+  // target: "server",
   devtools: { enabled: true },
   devServer: {
     port: 8000,
@@ -49,21 +51,16 @@ export default defineNuxtConfig({
     "@/assets/styles/global.css",
     "primevue/resources/themes/aura-light-green/theme.css",
   ],
-  // build: {
-  //   postcss: {
-  //     postcssOptions: require("./postcss.config.js"),
-  //   },
-  // },
   // vite: aliasConfig,
   // nitro: {
   //   alias: aliasConfig.resolve.alias,
   // },
-  routeRules: {
-    "/accessibility": {
-      redirect: { to: "/guides/accessibility", statusCode: 301 },
-    },
-    "/installation": { redirect: { to: "/vite", statusCode: 301 } },
-  },
+  // routeRules: {
+  //   "/accessibility": {
+  //     redirect: { to: "/guides/accessibility", statusCode: 301 },
+  //   },
+  //   "/installation": { redirect: { to: "/vite", statusCode: 301 } },
+  // },
   app: {
     baseURL: baseUrl,
     head: {
