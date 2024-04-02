@@ -88,8 +88,14 @@
             placeholder="Enter Email"
             name="email"
             required
+            autofocus
+            :class="{ 'p-invalid': submitted && !user.email }"
           />
+          <small class="p-error text-lg" v-if="submitted && !user.email"
+            >Email is required.</small
+          >
 
+          <br />
           <label for="psw" class="psw"><b>Password</b></label>
           <InputText
             type="text"
@@ -98,8 +104,12 @@
             placeholder="Enter Password"
             name="psw"
             required
+            :class="{ 'p-invalid': submitted && !user.password }"
           />
-
+          <small class="p-error text-lg" v-if="submitted && !user.password"
+            >Password is required.</small
+          >
+          <br />
           <button @click.prevent="login" class="button">Login</button>
         </div>
       </div>
@@ -111,22 +121,33 @@
 import { storeToRefs } from "pinia";
 import { useAuthStore } from "~/store/auth";
 import InputText from "primevue/inputtext";
+const submitted = ref(false);
 
 const { authenticateUser } = useAuthStore(); // use auth store
 
 const { authenticated } = storeToRefs(useAuthStore()); // make authenticated state reactive
 
-const user = ref({
-  email: "demo@1tool.com",
-  password: "1234",
-});
+const user = ref({ email: "", password: "" });
+
+// const user = ref({
+//   email: "demo@1tool.com",
+//   password: "1234",
+// });
 const router = useRouter();
 
 const login = async () => {
-  await authenticateUser(user.value);
-  // redirect to homepage if user is authenticated
-  if (authenticated) {
-    router.push("/note");
+  submitted.value = true;
+  if (user.value.email.trim() || user.value.password.trim()) {
+    try {
+      await authenticateUser(user.value);
+      // redirect to homepage if user is authenticated
+      if (authenticated) {
+        router.push("/note");
+      }
+    } catch (error) {
+      console.error("An error occurred while authenticating user:", error);
+      // Handle error here, such as displaying an error message to the user
+    }
   }
 };
 </script>
