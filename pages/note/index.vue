@@ -83,10 +83,7 @@
         <Button
           icon="pi pi-times"
           severity="danger"
-          rounded
-          outlined
-          aria-label="Cancel"
-          class="w-1"
+          label="Delete"
           @click="confirmDeleteProduct(note)"
           v-if="note?.id"
         />
