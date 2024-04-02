@@ -16,7 +16,7 @@ export const useAuthStore = defineStore("auth", {
     async authenticateUser({ email, password }: UserPayloadInterface) {
       try {
         // useFetch from nuxt 3
-        const { data, pending }: any = await useFetch(
+        const { data, pending, error }: any = await useFetch(
           "https://my.1tool.com/suite/api/auth/user",
           {
             method: "post",
@@ -29,7 +29,6 @@ export const useAuthStore = defineStore("auth", {
         );
         this.loading = pending;
 
-        console.log("data: ", data);
         if (data.value) {
           const token = useCookie("token"); // useCookie new hook in nuxt 3
           const tenant_identifier = useCookie("tenant_identifier"); // useCookie new hook in nuxt 3
@@ -37,6 +36,7 @@ export const useAuthStore = defineStore("auth", {
           tenant_identifier.value = data?.value?.tenant_identifier; // set tenant_identifier to cookie
           this.authenticated = true; // set authenticated  state value to true
         }
+        return { data, error };
       } catch (error) {
         console.error("An error occurred during user authentication:", error);
         // Handle error here, such as displaying an error message to the user

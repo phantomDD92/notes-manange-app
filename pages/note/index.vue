@@ -247,7 +247,8 @@ const saveNote = async () => {
 
 const editNote = async (prod) => {
   // await getNote(prod);
-  note.value = prod;
+  note.value = await getNote(prod);
+  // note.value = prod;
   noteDialog.value = true;
 };
 

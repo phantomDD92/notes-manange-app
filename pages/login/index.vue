@@ -143,20 +143,22 @@ const login = async () => {
   submitted.value = true;
   if (user.value.email.trim() || user.value.password.trim()) {
     try {
-      const { error } = await authenticateUser(user.value);
-      console.log("error: ", error);
+      const data = await authenticateUser(user.value);
+      console.log("data: ", data);
       // redirect to homepage if user is authenticated
-      if (!error && authenticated) {
+      const error = data?.error?.value;
+      if (authenticated.value) {
         router.push("/note");
+      } else {
+        toast.add({
+          severity: "error",
+          summary: "Error",
+          detail: "Something is wrong!",
+          life: 3000,
+        });
       }
     } catch (error) {
       console.log("error: ", error.message);
-      toast.add({
-        severity: "error",
-        summary: "Error",
-        detail: "Something is wrong!",
-        life: 3000,
-      });
       // Handle error here, such as displaying an error message to the user
     }
   }
