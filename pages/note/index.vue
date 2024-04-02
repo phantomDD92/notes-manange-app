@@ -22,7 +22,11 @@
 
     <div class="grid justify-items-start pt-5 justify-content-center">
       <div v-for="item in notes" class="p-1 cursor-pointer">
-        <Card style="width: 25rem; overflow: hidden" @click="editNote(item)">
+        <Card
+          style="width: 25rem; overflow: hidden"
+          @click="editNote(item)"
+          class="bg-white"
+        >
           <template #title><div v-html="item.title"></div></template>
           <template #content>
             <p class="m-0" v-html="item.content"></p>
@@ -33,7 +37,7 @@
 
     <Dialog
       v-model:visible="noteDialog"
-      :style="{ width: '450px' }"
+      :style="{ width: '850px' }"
       header="Notes Details"
       :modal="true"
       class="p-fluid"
@@ -54,7 +58,7 @@
       </div>
       <div class="field">
         <label for="content">Content</label>
-        <Textarea
+        <!-- <Textarea
           id="content"
           v-model="note.content"
           v-html="note.content"
@@ -62,6 +66,13 @@
           required="true"
           rows="10"
           cols="20"
+        /> -->
+        <Editor
+          id="content"
+          v-model="note.content"
+          editorStyle="height: 320px"
+          :class="{ 'p-invalid': submitted && !note.content }"
+          required="true"
         />
         <small class="p-error" v-if="submitted && !note.content"
           >Content is required.</small
@@ -145,6 +156,7 @@ import Menubar from "primevue/menubar";
 import Button from "primevue/button";
 import Card from "primevue/card";
 import { useToast } from "primevue/usetoast";
+import Editor from "primevue/editor";
 import ProgressSpinner from "primevue/progressspinner";
 
 import { nextTick } from "vue";
@@ -290,6 +302,6 @@ const logout = async () => {
 <style lang="scss">
 body {
   --tw-bg-opacity: 1 !important;
-  background-color: rgb(30 41 59 / 1) !important;
+  background-color: #f1f5f9 !important;
 }
 </style>
